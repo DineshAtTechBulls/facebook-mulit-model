@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 
 @Entity
-public class Posts implements Serializable {
+public class Posts {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)

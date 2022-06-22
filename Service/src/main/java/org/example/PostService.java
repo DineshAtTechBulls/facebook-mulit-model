@@ -1,6 +1,9 @@
 package org.example;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -13,8 +16,9 @@ public class PostService {
     @Autowired
     PostRepo postRepo;
 
-   public List<Posts> getPosts(){
-       return (List<Posts>) postRepo.findAll();
+   public Page<Posts> getPosts(){
+       Pageable page = PageRequest.of(0, 5);
+       return postRepo.findAll(page);
    }
 
    public Optional<Posts> getPostById(Long id){
