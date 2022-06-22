@@ -16,6 +16,9 @@ public class PostService {
     @Autowired
     PostRepo postRepo;
 
+    @Autowired
+    PostRedisService postRedisService;
+
    public Page<Posts> getPosts(){
        Pageable page = PageRequest.of(0, 5);
        return postRepo.findAll(page);
@@ -26,7 +29,7 @@ public class PostService {
    }
 
    public Posts createPost(Posts post){
-       return postRepo.save(post);
+       return postRedisService.savePosts(postRepo.save(post));
    }
 
    public boolean deletePost(Long id){

@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.PostRedisService;
 import org.example.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -15,10 +16,12 @@ public class Posts {
     @Autowired
     PostService postService;
 
-    @GetMapping("/")
-    @Cacheable(value = "Posts", sync = true)
-    public Object getPost(){
-        return postService.getPosts();
+    @Autowired
+    PostRedisService postRedisService;
+
+    @GetMapping("/posts")
+    public Object getPost(@RequestParam("pageNo") int pageNo, @RequestParam("pageSize") int size){
+        return postRedisService.findAll(pageNo, size);
     }
 
     @GetMapping("/post/{id}")
