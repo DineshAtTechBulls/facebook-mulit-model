@@ -1,9 +1,11 @@
 package org.example;
 
 import javax.persistence.*;
+import java.io.Serializable;
+
 
 @Entity
-public class Posts {
+public class Posts implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)

@@ -25,4 +25,12 @@ public class PostService {
        return postRepo.save(post);
    }
 
+   public boolean deletePost(Long id){
+       try {
+           postRepo.deleteById(id);
+           return true;
+       }catch (Exception e){
+           return false;
+       }
+   }
 }
