@@ -4,6 +4,7 @@ import org.example.redis.PostRedisRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
@@ -70,7 +71,11 @@ public class PostRedisService {
     }
 
     public Page<Posts> getAllPosts(int pageNo, int pageSize){
-        return postRedisRepo.findAll(PageRequest.of(pageNo,pageSize));
+        return postRedisRepo.findAll(PageRequest.of(pageNo,pageSize,Sort.by("message").descending()));
+    }
+
+    public Posts findPostByMessage(String message){
+        return postRedisRepo.findByMessage(message);
     }
 
 }

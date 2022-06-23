@@ -24,6 +24,11 @@ public class Posts {
         return postRedisService.getAllPosts(pageNo,size);
     }
 
+    @GetMapping("/post/message")
+    public org.example.Posts getPostByMessage(@RequestParam("msg") String message){
+        return postRedisService.findPostByMessage(message);
+    }
+
     @GetMapping("/post/{id}")
     @Cacheable(value = "Posts",key="#id")
     public org.example.Posts getPostById(@PathVariable("id") Long id){
