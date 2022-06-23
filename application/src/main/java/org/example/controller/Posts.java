@@ -21,7 +21,7 @@ public class Posts {
 
     @GetMapping("/posts")
     public Object getPost(@RequestParam("pageNo") int pageNo, @RequestParam("pageSize") int size){
-        return postRedisService.findAll(pageNo, size);
+        return postRedisService.getAllPosts(pageNo,size);
     }
 
     @GetMapping("/post/{id}")

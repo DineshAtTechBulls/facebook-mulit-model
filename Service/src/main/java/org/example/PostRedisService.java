@@ -1,6 +1,9 @@
 package org.example;
 
+import org.example.redis.PostRedisRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
@@ -15,6 +18,8 @@ import static org.hibernate.tool.schema.SchemaToolingLogging.LOGGER;
 @Repository
 public class PostRedisService {
 
+    @Autowired
+    PostRedisRepo postRedisRepo;
     private static final String HASH_KEY = "Posts";
 
     @Autowired
@@ -34,7 +39,6 @@ public class PostRedisService {
     public List<Posts> findAll(){
         return redisTemplate.opsForHash().values(HASH_KEY);
     }
-
 
     public List<Posts> findAll(final int pageNum, final int pageSize) {
         int tmpIndex = 0;
@@ -63,6 +67,10 @@ public class PostRedisService {
             }
         }
         return entities;
+    }
+
+    public Page<Posts> getAllPosts(int pageNo, int pageSize){
+        return postRedisRepo.findAll(PageRequest.of(pageNo,pageSize));
     }
 
 }

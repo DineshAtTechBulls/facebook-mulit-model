@@ -1,5 +1,7 @@
 package org.example;
 
+import org.springframework.data.redis.core.RedisHash;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
