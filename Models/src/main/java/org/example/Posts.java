@@ -1,17 +1,21 @@
 package org.example;
 
 
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 
 @Entity
+@RedisHash("Posts")
 public class Posts implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private String id;
 
+    @Indexed
     private String message;
 
     private boolean isVisible;
@@ -21,11 +25,13 @@ public class Posts implements Serializable {
     private Integer comments;
 
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+
+
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -59,5 +65,16 @@ public class Posts implements Serializable {
 
     public void setComments(Integer comments) {
         this.comments = comments;
+    }
+
+    @Override
+    public String toString() {
+        return "Posts{" +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                ", isVisible=" + isVisible +
+                ", likes=" + likes +
+                ", comments=" + comments +
+                '}';
     }
 }

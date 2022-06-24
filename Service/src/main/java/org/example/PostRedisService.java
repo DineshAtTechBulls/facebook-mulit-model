@@ -5,14 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.connection.SortParameters;
+import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.query.SortQueryBuilder;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hibernate.tool.schema.SchemaToolingLogging.LOGGER;
 
@@ -25,11 +29,18 @@ public class PostRedisService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+    private Object d;
 
 
     public Posts savePosts(Posts post){
         System.out.println("id ----> "+post.getId());
-        redisTemplate.opsForHash().put(HASH_KEY, post.getId(),post);
+        redisTemplate.boundSetOps("sortKey").add(post.getMessage());
+        BoundHashOperations x = redisTemplate.boundHashOps("hash" + post.getMessage());
+        x.put("id",post.getId());
+         x.put("message", post.getMessage());
+         x.put("likes",post.getLikes());
+         x.put("comments",post.getComments());
+
         return post;
     }
 
@@ -71,11 +82,31 @@ public class PostRedisService {
     }
 
     public Page<Posts> getAllPosts(int pageNo, int pageSize){
-        return postRedisRepo.findAll(PageRequest.of(pageNo,pageSize,Sort.by("message").descending()));
+        return postRedisRepo.findAll(PageRequest.of(pageNo,pageSize, Sort.by("likes").descending()));
     }
 
     public Posts findPostByMessage(String message){
         return postRedisRepo.findByMessage(message);
+    }
+
+    public Object findAllPosts(int start, int end){
+        SortParameters.Order order = SortParameters.Order.DESC;
+        List list = redisTemplate.sort(SortQueryBuilder.sort("sortKey")
+                .by("hash*->message")
+                        .order(order)
+                        .limit(start*end,end)
+                .build());
+        List x = new ArrayList();
+        list.forEach(d->{
+            x.add(redisTemplate.boundHashOps("hash"+d).entries());
+        });
+
+        Map<String, Object> mapper = new HashMap<>();
+        mapper.put("content", x);
+        mapper.put("sorted", true);
+        mapper.put("total_elements", x.size());
+
+        return mapper;
     }
 
 }
