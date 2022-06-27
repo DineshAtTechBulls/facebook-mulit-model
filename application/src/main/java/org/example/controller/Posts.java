@@ -29,10 +29,11 @@ public class Posts {
         return postRedisService.findPostByMessage(message);
     }
 
+
+
     @GetMapping("/post/{id}")
-    @Cacheable(value = "Posts",key="#id")
-    public org.example.Posts getPostById(@PathVariable("id") Long id){
-        return postService.getPostById(id).get();
+    public Object getPostById(@PathVariable String id){
+        return postRedisService.findPostbyId(id);
     }
 
 

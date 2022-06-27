@@ -11,9 +11,6 @@ import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.query.SortQueryBuilder;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -34,8 +31,8 @@ public class PostRedisService {
 
     public Posts savePosts(Posts post){
         System.out.println("id ----> "+post.getId());
-        redisTemplate.boundSetOps("sortKey").add(post.getMessage());
-        BoundHashOperations x = redisTemplate.boundHashOps("hash" + post.getMessage());
+        redisTemplate.boundSetOps("sortKey").add(post.getId());
+        BoundHashOperations x = redisTemplate.boundHashOps("hash" + post.getId());
         x.put("id",post.getId());
          x.put("message", post.getMessage());
          x.put("likes",post.getLikes());
@@ -44,8 +41,9 @@ public class PostRedisService {
         return post;
     }
 
-    public Posts findPostbyId(Long id){
-        return (Posts) redisTemplate.opsForHash().get(HASH_KEY, id);
+    public Object findPostbyId(String id){
+        System.out.println("Inside find by id");
+        return redisTemplate.boundHashOps("hash"+id).entries();
     }
 
     public List<Posts> findAll(){
